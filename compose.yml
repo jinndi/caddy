@@ -1,0 +1,42 @@
+services:
+  caddy:
+    image: ghcr.io/jinndi/caddy:latest
+    restart: unless-stopped
+    container_name: wgd-caddy
+    environment:
+      TZ: ""
+      DOMAIN: ""
+      EMAIL: ""
+      PROXY: ""
+      PROXY_STRIP_PREFIX: ""
+      LOG_LEVEL: "info"
+    ports:
+      - 80:80/tcp
+      - 443:443/tcp
+      - 443:443/udp
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - caddy_net
+    cap_add:
+      - NET_ADMIN
+
+volumes:
+  caddy_data:
+    name: caddy_data
+    driver: local
+  caddy_config:
+    name: caddy_config
+    driver: local
+
+networks:
+  wgd_net:
+    name: caddy_net
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.110.0/24
+        - subnet: fd00:dead:beef:110::/64
