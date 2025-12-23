@@ -4,6 +4,9 @@
 <h1 align="center">
 <a href="https://github.com/caddyserver/caddy-docker">Caddy</a> docker image
 </h1>
+<h3 align="center">
+ Quick domain reverse proxy with auto-renewing SSL
+</h3>
 <p align="center">
 <img alt="Release" src="https://img.shields.io/github/v/release/jinndi/caddy">
 <img alt="Code size in bytes" src="https://img.shields.io/github/languages/code-size/jinndi/caddy">
@@ -12,7 +15,7 @@
 <img alt="Visitor" src="https://hitscounter.dev/api/hit?url=https%3A%2F%2Fgithub.com%2Fjinndi%2Fcaddy&label=visitor&icon=eye&color=%230d6efd&message=&style=flat&tz=UTC">
 </p>
 
-## 🚀 Differences from the official image
+## 🧩 Differences from the official image
 
 - Setting up a reverse proxy using environment variables
 - Supports only two architectures: linux/amd64 and linux/arm64
