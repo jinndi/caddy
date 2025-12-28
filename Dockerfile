@@ -1,4 +1,5 @@
-FROM alpine:3.22
+# https://hub.docker.com/_/alpine/tags
+FROM alpine:3.23
 
 # https://github.com/caddyserver/caddy/releases
 ARG CADDY_VERSION=v2.10.2
