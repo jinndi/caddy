@@ -64,11 +64,13 @@ docker compose up -d
 
 ## ⚙️ Options
 
-| Env                  | Default               | Description                                                                                                                                                                                                                                   |
-| -------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `TZ`               | -                       | Timezone. Useful for accurate logs and scheduling. Example: `Europe/Moscow`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `DOMAIN`             | -                     | Required. Domain linked to your server's IP.                                                                                                                                                                                                  |
-| `EMAIL`              | -                     | Required. Your email adress, used when creating an ACME account with your CA.                                                                                                                                                                 |
-| `PROXY`              | -                     | Addresses for the reverse proxy. You can add multiple values separated by commas. Each value must follow the format `<domain_or_ip>:<port>/<prefix>` or `<domain_or_ip>/<prefix>`. The **prefix will be passed** to the proxy backend itself. |
-| `PROXY_STRIP_PREFIX` | -                     | Same as `PROXY`, except the **prefix will not be passed** to the proxy backend.                                                                                                                                                               |
-| `LOG_LEVEL`          | `info`                | Log Level. Possible values: `debug`, `info`, `warn`, `error`, and very rarely, `panic`, `fatal`                                                                                                                                               |
+| Env | Default | Description |
+| :--- | :--- | :--- |
+| `TZ` | - | Timezone. Useful for accurate logs and scheduling. Example: `Europe/London` |
+| `DOMAIN` | - | **Required.** Domain linked to your server's IP. |
+| `EMAIL` | - | **Required.** Your email address for ACME (Let's Encrypt / ZeroSSL). |
+| `PROXY_ROOT` | - | **Root Proxy Mode.** Backend address (`host:port`) to proxy 100% of the domain's traffic. |
+| `PROXY` | - | **Path Proxy Mode.** Format: `host:port/prefix`. **Prefix is preserved**. |
+| `PROXY_STRIP_PREFIX` | - | **Path Proxy Mode.** Format: `host:port/prefix`. **Prefix is stripped**. |
+| `LOG_LEVEL` | `info` | Log Level: `debug`, `info`, `warn`, `error`, `panic`, `fatal`  |
+

@@ -27,12 +27,12 @@ EMAIL="${EMAIL:-}"
   && exiterr "EMAIL must be a valid!"
 log "Using EMAIL: $EMAIL"
 
+PROXY_ROOT="${PROXY_ROOT:-}"
 PROXY="${PROXY:-}"
-
 PROXY_STRIP_PREFIX="${PROXY_STRIP_PREFIX:-}"
 
-if [[ -z "$PROXY" && -z "$PROXY_STRIP_PREFIX" ]]; then
-  exiterr "PROXY or/and PROXY_STRIP_PREFIX not set!"
+if [[ -z "$PROXY" && -z "$PROXY_STRIP_PREFIX" && -z "$PROXY_ROOT" ]]; then
+  exiterr "PROXY, PROXY_STRIP_PREFIX or PROXY_ROOT must be set!"
 fi
 
 LOG_LEVEL="${LOG_LEVEL:-info}"
@@ -76,6 +76,22 @@ $DOMAIN {
 
 EOF
 
+validate_host_port() {
+  local host_port="${1,,}"
+  if [[ "$host_port" == *:* ]]; then
+    local host="${host_port%%:*}"
+    local port="${host_port##*:}"
+    if ! [[ "$port" =~ ^[0-9]{1,5}$ ]] || (( port < 1 || port > 65535 )); then
+      exiterr "Invalid port in: $host_port"
+    fi
+  else
+    local host="$host_port"
+  fi
+  if ! [[ "$host" =~ ^[a-z0-9._-]+$ ]]; then
+    exiterr "Invalid hostname/domain format: $host"
+  fi
+}
+
 gen_route() {
   [[ -z "$1" ]] && return
 
@@ -84,41 +100,22 @@ gen_route() {
 
   for entry in "${proxies_array[@]}"; do
     host_port="${entry%%/*}"
-    host_port="${host_port,,}"
     path="${entry#*/}"
 
-    # Validate path
-    if [[ -z "$path" ]]; then
+    if [[ -z "$path" || "$path" == "$entry" ]]; then
       exiterr "Path is missing in entry: $entry"
     fi
     if ! [[ "$path" =~ ^[a-zA-Z0-9/_-]+$ ]]; then
       exiterr "Invalid path format: $path"
     fi
 
-    # Validate host:port
-    if [[ "$host_port" == *:* ]]; then
-      host="${host_port%%:*}"
-      port="${host_port##*:}"
+    validate_host_port "$host_port"
+    log "Valid path-route: $entry"
 
-      if ! [[ "$port" =~ ^[0-9]{1,5}$ ]] || (( port < 1 || port > 65535 )); then
-        exiterr "Invalid port: $host_port"
-      fi
-    else
-      host="$host_port"
-      port=""
-    fi
-
-    if ! [[ "$host" =~ ^[a-z0-9._-]+$ ]]; then
-      exiterr "Invalid hostname/domain format: $host"
-    fi
-
-    log "Valid: $entry"
-
-    # Generate route
     {
       echo "  route /$path* {"
       if [[ "$strip_prefix" == "true" ]]; then
-      echo "    uri strip_prefix /$path"
+        echo "    uri strip_prefix /$path"
       fi
       echo "    reverse_proxy $host_port"
       echo "  }"
@@ -127,16 +124,29 @@ gen_route() {
   done
 }
 
-gen_route "$PROXY"
-gen_route "$PROXY_STRIP_PREFIX" "true"
+if [[ -n "$PROXY_ROOT" ]]; then
+  # ROOT PROXY MODE, validate and generate single catch-all route
+  validate_host_port "$PROXY_ROOT"
+  log "Configuring root reverse proxy to: $PROXY_ROOT"
 
-# Fallback route
-{
-  echo "  route {"
-  echo "    respond \"Not found!\" 404"
-  echo "  }"
-  echo "}"
-} >> "$CADDYFILE"
+  {
+    echo "  reverse_proxy $PROXY_ROOT"
+  } >> "$CADDYFILE"
+
+else
+  # We are in path-based proxy mode, validate and generate routes for both PROXY and PROXY_STRIP_PREFIX
+  gen_route "$PROXY"
+  gen_route "$PROXY_STRIP_PREFIX" "true"
+
+  # Fallback route
+  {
+    echo "  route {"
+    echo "    respond \"Not found!\" 404"
+    echo "  }"
+  } >> "$CADDYFILE"
+fi
+
+echo "}" >> "$CADDYFILE"
 
 log "Validate Caddyfile"
 if /usr/bin/caddy validate --config "$CADDYFILE" >/dev/null; then
