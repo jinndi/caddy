@@ -66,11 +66,11 @@ docker compose up -d
 
 | Env | Default | Description |
 | :--- | :--- | :--- |
-| `TZ` | - | Timezone. Useful for accurate logs and scheduling. Example: `Europe/London` |
+| `TZ` | - | Timezone. Useful for accurate logs and scheduling. Example: `Europe/Moscow` |
 | `DOMAIN` | - | **Required.** Domain linked to your server's IP. |
-| `EMAIL` | - | **Required.** Your email address for ACME (Let's Encrypt / ZeroSSL). |
-| `PROXY_ROOT` | - | **Root Proxy Mode.** Backend address (`host:port`) to proxy 100% of the domain's traffic. |
-| `PROXY` | - | **Path Proxy Mode.** Format: `host:port/prefix`. **Prefix is preserved**. |
-| `PROXY_STRIP_PREFIX` | - | **Path Proxy Mode.** Format: `host:port/prefix`. **Prefix is stripped**. |
+| `EMAIL` | - | **Required.** Your email address, used when creating an ACME account with your CA (Let's Encrypt / ZeroSSL). |
+| `PROXY_ROOT` | - | **Root Proxy Mode.** Address of a single backend (`<domain_or_ip>:<port>` or `<domain_or_ip>`) to proxy 100% of the domain's traffic. If set, `PROXY` and `PROXY_STRIP_PREFIX` are ignored. |
+| `PROXY` | - | **Path Proxy Mode.** Addresses for the reverse proxy separated by commas. Format: `<domain_or_ip>:<port>/<prefix>` or `<domain_or_ip>`. The **prefix will be passed** to the backend itself. |
+| `PROXY_STRIP_PREFIX` | - | **Path Proxy Mode.** Same as `PROXY`, except the **prefix will be stripped (removed)** before forwarding the request to the backend. |
 | `LOG_LEVEL` | `info` | Log Level: `debug`, `info`, `warn`, `error`, `panic`, `fatal`  |
 
