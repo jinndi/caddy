@@ -30,7 +30,7 @@ RUN set -eux; \
 		*) echo >&2 "error: unsupported architecture ($apkArch)"; exit 1 ;; \
 	esac; \
 	wget -O /tmp/caddy.tar.gz "https://github.com/caddyserver/caddy/releases/download/${CADDY_VERSION}/caddy_${CADDY_VERSION#v}_linux_${binArch}.tar.gz"; \
-	tar x -z -f /tmp/caddy.tar.gz -C /usr/bin caddy; \
+  tar x -z -f /tmp/caddy.tar.gz -C /usr/bin caddy; \
 	rm -f /tmp/caddy.tar.gz; \
 	setcap cap_net_bind_service=+ep /usr/bin/caddy; \
 	chmod +x /usr/bin/caddy /entrypoint.sh; \
