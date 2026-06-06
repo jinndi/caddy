@@ -25,9 +25,9 @@ COPY ./entrypoint.sh /entrypoint.sh
 RUN set -eux; \
 	apkArch="$(apk --print-arch)"; \
 	case "$apkArch" in \
-		x86_64)  binArch='amd64' ;;\
-		aarch64) binArch='arm64' ;;\
-		*) echo >&2 "error: unsupported architecture ($apkArch)"; exit 1 ;;\
+		x86_64)  binArch='amd64' ;; \
+		aarch64) binArch='arm64' ;; \
+		*) echo >&2 "error: unsupported architecture ($apkArch)"; exit 1 ;; \
 	esac; \
 	wget -O /tmp/caddy.tar.gz "https://github.com/caddyserver/caddy/releases/download/${CADDY_VERSION}/caddy_${CADDY_VERSION#v}_linux_${binArch}.tar.gz"; \
 	tar x -z -f /tmp/caddy.tar.gz -C /usr/bin caddy; \
