@@ -1,8 +1,8 @@
 # https://hub.docker.com/_/alpine/tags
-FROM alpine:3.23
+FROM alpine:3.24
 
 # https://github.com/caddyserver/caddy/releases
-ARG CADDY_VERSION=v2.11.4
+ARG CADDY_VERSION=v2.11.9
 
 RUN apk add --no-cache \
 	ca-certificates \
